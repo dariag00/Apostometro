@@ -115,7 +115,6 @@ public class SignUpActivity extends AppCompatActivity {
         user.setEmail(email);
         user.setName(name);
         user.setSurname(surname);
-        user.setTokenId(FirebaseMessaging.getInstance().getToken().getResult());
 
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(runnable -> {
             user.setTokenId(runnable.getResult());

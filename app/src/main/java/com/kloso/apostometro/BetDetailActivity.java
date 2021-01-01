@@ -102,7 +102,9 @@ public class BetDetailActivity extends AppCompatActivity {
         FirestoreViewModel firestoreViewModel = new ViewModelProvider(this).get(FirestoreViewModel.class);
         firestoreViewModel.getBetLiveData(betId).observe(this, liveDataBet -> {
             bet = liveDataBet;
-            setBetData();
+            if(bet != null) {
+                setBetData();
+            }
         });
     }
 

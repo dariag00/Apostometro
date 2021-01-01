@@ -35,7 +35,7 @@ public class BetFirebaseMessagingService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
 
         Intent intent;
-        if(remoteMessage.getData().get("type").equals("edit")){
+        if(remoteMessage.getData().containsKey("type") && remoteMessage.getData().get("type").equals("edit")){
             intent = new Intent(this, BetDetailActivity.class);
             intent.putExtra(Constants.BET_ID, remoteMessage.getData().get("bet_id"));
         } else {
