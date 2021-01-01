@@ -24,6 +24,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.kloso.apostometro.model.Bet;
 import com.kloso.apostometro.model.Participant;
 import com.kloso.apostometro.model.User;
+import com.kloso.apostometro.ui.CreateBetActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -74,23 +75,35 @@ public class BetDetailActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        Intent previousIntent = getIntent();
-        bet = (Bet) previousIntent.getSerializableExtra(Constants.BET);
-
-        setBetData();
-
         favourAdapter = new UsersAdapter();
         againstAdapter = new UsersAdapter();
 
+        setUpBet();
+
         setUpRecyclerView(favourRecyclerView, favourAdapter);
         setUpRecyclerView(againstRecyclerView, againstAdapter);
-        favourAdapter.setParticipantList(bet.getUsersWhoBets());
-        againstAdapter.setParticipantList(bet.getUsersWhoReceive());
 
         markAsResolvedButton.setOnClickListener(view -> showConfirmationDialogMarkResolved());
 
         requestQueue = Volley.newRequestQueue(this);
+    }
 
+    private void setUpBet(){
+        Intent previousIntent = getIntent();
+        String betId = null;
+        if(previousIntent.hasExtra(Constants.BET)) {
+            bet = (Bet) previousIntent.getSerializableExtra(Constants.BET);
+            betId = bet.getId();
+            setBetData();
+        } else if(previousIntent.hasExtra(Constants.BET_ID)){
+            betId = previousIntent.getStringExtra(Constants.BET_ID);
+        }
+
+        FirestoreViewModel firestoreViewModel = new ViewModelProvider(this).get(FirestoreViewModel.class);
+        firestoreViewModel.getBetLiveData(betId).observe(this, liveDataBet -> {
+            bet = liveDataBet;
+            setBetData();
+        });
     }
 
     private void showConfirmationDialogMarkResolved() {
@@ -158,6 +171,10 @@ public class BetDetailActivity extends AppCompatActivity {
         if(clickedItem == R.id.action_delete){
             showConfirmationDialogDeleteBet();
             return true;
+        } else if(clickedItem == R.id.action_edit){
+            Intent intent = new Intent(this, CreateBetActivity.class);
+            intent.putExtra(Constants.BET, bet);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -240,6 +257,8 @@ public class BetDetailActivity extends AppCompatActivity {
         if(bet.getCreationDate() != null) {
             createdAtView.setText(new SimpleDateFormat("dd/MM/yyyy").format(bet.getCreationDate()));
         }
+        favourAdapter.setParticipantList(bet.getUsersWhoBets());
+        againstAdapter.setParticipantList(bet.getUsersWhoReceive());
     }
 
 }

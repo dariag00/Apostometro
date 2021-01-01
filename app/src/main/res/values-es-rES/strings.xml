@@ -45,4 +45,10 @@
     <string name="delete_bet">Eliminar Apuesta</string>
     <string name="delete_bet_confirm_2">¿Estás seguro de que quieres eliminar esta Apuesta?</string>
     <string name="delete_bet_confirm_1">¿Estás seguro de que quieres eliminarla?</string>
+    <string name="create_bet">Crear Apuesta</string>
+    <string name="delete">Eliminar</string>
+    <string name="edit">Editar</string>
+    <string name="edit_bet">Editar Apuesta</string>
+    <string name="empty_participant_error">No se puede crear un participant con nombre vacío.</string>
+    <string name="saving_bet_error">Error al guardar la apuesta. Por favor, prueba de nuevo más tarde.</string>
 </resources>

@@ -50,4 +50,10 @@
     <string name="delete_bet">Delete Bet</string>
     <string name="delete_bet_confirm_1">Are you sure you want to delete it?</string>
     <string name="delete_bet_confirm_2">Are you sure you want to delete this Bet?</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="edit_bet">Edit Bet</string>
+    <string name="create_bet">Create Bet</string>
+    <string name="empty_participant_error">You have to specify a participant name or email</string>
+    <string name="saving_bet_error">Error while saving the bet. Please, try again later.</string>
 </resources>

@@ -27,19 +27,21 @@ public class BetFirebaseMessagingService extends FirebaseMessagingService {
 
 
     private static final String TAG = BetFirebaseMessagingService.class.getName();
-    private String ADMIN_CHANNEL_ID = "admin_channel";
+    private String BET_CHANNEL_ID = "bet_channel";
 
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
+        Intent intent;
+        if(remoteMessage.getData().get("type").equals("edit")){
+            intent = new Intent(this, BetDetailActivity.class);
+            intent.putExtra(Constants.BET_ID, remoteMessage.getData().get("bet_id"));
+        } else {
+            intent = new Intent(this, MainActivity.class);
+        }
 
-        String from = remoteMessage.getFrom();
-
-        Log.i(TAG, "FROM: " + from);
-
-        Intent intent = new Intent(this, MainActivity.class);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         int notificationID = new Random().nextInt(3000);
 
@@ -52,7 +54,7 @@ public class BetFirebaseMessagingService extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         BitmapFactory.decodeResource(this.getResources(), R.drawable.icon);
         Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, ADMIN_CHANNEL_ID)
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, BET_CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification)
                 .setAutoCancel(true)
                 .setSound(notificationSound)
@@ -71,10 +73,10 @@ public class BetFirebaseMessagingService extends FirebaseMessagingService {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setupChannels(NotificationManager notificationManager){
-        String channelName = "New notififcation";
-        String description = "Description";
+        String channelName = "Bet notifications";
+        String description = "Receive information about created or edited bets";
 
-        NotificationChannel notificationChannel = new NotificationChannel(ADMIN_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_HIGH);
+        NotificationChannel notificationChannel = new NotificationChannel(BET_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_HIGH);
         notificationChannel.setDescription(description);
         notificationChannel.enableLights(true);
         notificationChannel.setLightColor(Color.RED);
@@ -85,6 +87,6 @@ public class BetFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(@NonNull String s) {
         super.onNewToken(s);
-        Log.i(TAG, "TOKEN; " + s);
+        Log.i(TAG, "New Token received: " + s);
     }
 }

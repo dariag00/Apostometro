@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -89,6 +90,8 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
     private String FCM_API = "https://fcm.googleapis.com/fcm/send";
 
     private RequestQueue requestQueue;
+    private boolean isEdit;
+    private Bet editableBet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,13 +105,35 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
         favourAdapter = new UsersAdapter();
         againstAdapter = new UsersAdapter();
 
+        Intent previousIntent = getIntent();
+        if(previousIntent.hasExtra(Constants.BET)) {
+            editableBet = (Bet) previousIntent.getSerializableExtra(Constants.BET);
+            isEdit = true;
+            this.setTitle(this.getResources().getString(R.string.edit_bet));
+            populateFormWithBetData();
+        } else {
+            isEdit = false;
+            dateView.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date()));
+            this.setTitle(this.getResources().getString(R.string.create_bet));
+        }
+
+        firestoreViewModel = new ViewModelProvider(this).get(FirestoreViewModel.class);
+        firestoreViewModel.getUsers().observe(this, users -> {
+            Log.i(TAG, "Received new Users data. Size: " + users.size());
+            currentUsers = users;
+            favourAdapter.setUsers(users);
+            againstAdapter.setUsers(users);
+        });
+
+        firestoreViewModel.getUserByEmail(new BetRepository().getFirebaseUser().getEmail()).observe(this, user -> {
+            this.user = user;
+        });
+
+
         dateView.setOnClickListener(view -> showDatePickerDialog(dateView));
-        dateView.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date()));
         endDateView.setOnClickListener(view -> showDatePickerDialog(endDateView));
 
         changeFormVisibility(true);
-
-        this.setTitle("Create Bet");
 
         addParticipantButton.setOnClickListener( view -> {
             String text = participantDataView.getText().toString();
@@ -131,20 +156,8 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
                 }
                 participantDataView.setText("");
             } else {
-                Toast.makeText(this, "No se puede crear un participant con nombre vacío.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, this.getResources().getString(R.string.empty_participant_error), Toast.LENGTH_SHORT).show();
             }
-        });
-
-        firestoreViewModel = new ViewModelProvider(this).get(FirestoreViewModel.class);
-        firestoreViewModel.getUsers().observe(this, users -> {
-            Log.i(TAG, "Received new Users data. Size: " + users.size());
-            currentUsers = users;
-            favourAdapter.setUsers(users);
-            againstAdapter.setUsers(users);
-        });
-
-        firestoreViewModel.getUserByEmail(new BetRepository().getFirebaseUser().getEmail()).observe(this, user -> {
-            this.user = user;
         });
 
         setUpRecyclerView(favourRecyclerView, favourAdapter);
@@ -154,10 +167,91 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
 
     }
 
-    private void notifyUsers(String token, String title, String message){
+    private void populateFormWithBetData(){
+        titleView.setText(editableBet.getTitle());
+        rewardView.setText(editableBet.getReward());
+        if(editableBet.getDueDate() != null) {
+            dateView.setText(new SimpleDateFormat("dd/MM/yyyy").format(editableBet.getDueDate()));
+        }
+        if(editableBet.getCreationDate() != null) {
+            endDateView.setText(new SimpleDateFormat("dd/MM/yyyy").format(editableBet.getCreationDate()));
+        }
+        favourParticipants.addAll(editableBet.getUsersWhoBets());
+        againstParticipants.addAll(editableBet.getUsersWhoReceive());
+        favourAdapter.setParticipantList(favourParticipants);
+        againstAdapter.setParticipantList(againstParticipants);
+    }
 
-        String topic = "/topics/bet_notifications";
-        FirebaseMessaging.getInstance().subscribeToTopic(topic);
+    private void processCreateExpenseAttempt(){
+        if(isValidBetCreation()){
+            try {
+                changeFormVisibility(false);
+                String title = titleView.getText().toString();
+                String reward = rewardView.getText().toString();
+                String dateString = dateView.getText().toString();
+
+                Bet bet = isEdit ? editableBet : new Bet();
+                bet.setTitle(title);
+                bet.setReward(reward);
+                bet.setCreationDate(new SimpleDateFormat("dd/MM/yyyy").parse(dateString));
+                if(endDateView.getText() != null) {
+                    String endDateString = endDateView.getText().toString();
+                    if(!endDateString.isEmpty()) {
+                        bet.setDueDate(new SimpleDateFormat("dd/MM/yyyy").parse(endDateString));
+                    }
+                }
+
+                bet.setUsersWhoBets(favourParticipants);
+                bet.setUsersWhoReceive(againstParticipants);
+                if(!isEdit) {
+                    bet.setCreatedBy(user);
+                }
+                bet.getParticipantEmails().add(user.getEmail());
+
+                FirestoreViewModel viewModel = new ViewModelProvider(this).get(FirestoreViewModel.class);
+                if(isEdit){
+                    viewModel.updateBet(bet);
+                } else {
+                    viewModel.saveBet(bet);
+                }
+
+                changeFormVisibility(true);
+
+                Set<String> tokens = new HashSet<>();
+
+                for(Participant participant : bet.getUsersWhoBets()){
+                    if(participant.isRealUser()){
+                        tokens.add(participant.getAssociatedUser().getTokenId());
+                    }
+                }
+
+                for(Participant participant : bet.getUsersWhoReceive()){
+                    if(participant.isRealUser()){
+                        tokens.add(participant.getAssociatedUser().getTokenId());
+                    }
+                }
+
+                tokens.add(bet.getCreatedBy().getTokenId());
+
+                for(String token : tokens) {
+                    if(!isEdit) {
+                        notifyUsers(token, "Nueva apuesta creada", bet.getCreatedBy().getFullName() + " ha creado una apuesta y te ha añadido.", null);
+                    } else {
+                        notifyUsers(token, "Apuesta Editada", user.getFullName() + " ha editado una apuesta en la que estás añadido", bet.getId());
+                    }
+                }
+                finish();
+            } catch (ParseException e) {
+                Log.e(TAG, "Error while saving the bet: ", e);
+                Toast.makeText(this, this.getResources().getString(R.string.saving_bet_error), Toast.LENGTH_SHORT).show();
+                changeFormVisibility(true);
+            }
+        } else {
+            Toast.makeText(this, "Rellena los campos necesarios", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void notifyUsers(String token, String title, String message, String betId){
 
         JSONObject notification = new JSONObject();
         JSONObject notificationBody = new JSONObject();
@@ -165,10 +259,14 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
         try {
             notificationBody.put("title", title);
             notificationBody.put("message", message);
+            if(betId != null){
+                notificationBody.put("type", "edit");
+                notificationBody.put("bet_id", betId);
+            }
             notification.put("to", token);
             notification.put("data", notificationBody);
         } catch (JSONException e) {
-            Log.e("TAG", "onCreate: " + e.getMessage());
+            Log.e(TAG, "onCreate: " + e.getMessage());
         }
 
         sendNotification(notification);
@@ -177,10 +275,10 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
 
     private void sendNotification(JSONObject notification){
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(FCM_API, notification, response -> {
-            Log.i("TAG", "onResponse: " + response);
+            Log.i(TAG, "onResponse: " + response);
         }, error -> {
             Toast.makeText(this, "ERROR", Toast.LENGTH_SHORT).show();
-            Log.i("TAG", "onErrorResponse: Didn't work", error);
+            Log.i(TAG, "onErrorResponse: Didn't work", error);
         }) {
             @Override
             public Map<String, String> getHeaders() {
@@ -230,65 +328,6 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
             view.setText(selectedDate);
         });
         datePickerFragment.show(getSupportFragmentManager(), "datePicker");
-    }
-
-    private void processCreateExpenseAttempt(){
-        if(isValidBetCreation()){
-            try {
-                changeFormVisibility(false);
-                String title = titleView.getText().toString();
-                String reward = rewardView.getText().toString();
-                String dateString = dateView.getText().toString();
-
-                Bet bet = new Bet();
-                bet.setTitle(title);
-                bet.setReward(reward);
-                bet.setCreationDate(new SimpleDateFormat("dd/MM/yyyy").parse(dateString));
-                if(endDateView.getText() != null) {
-                    String endDateString = endDateView.getText().toString();
-                    if(!endDateString.isEmpty()) {
-                        bet.setDueDate(new SimpleDateFormat("dd/MM/yyyy").parse(endDateString));
-                    }
-                }
-
-                bet.setUsersWhoBets(favourParticipants);
-                bet.setUsersWhoReceive(againstParticipants);
-                bet.setCreatedBy(user);
-                bet.getParticipantEmails().add(user.getEmail());
-
-                FirestoreViewModel viewModel = new ViewModelProvider(this).get(FirestoreViewModel.class);
-                viewModel.saveBet(bet);
-
-                changeFormVisibility(true);
-
-                Set<String> tokens = new HashSet<>();
-
-                for(Participant participant : bet.getUsersWhoBets()){
-                    if(participant.isRealUser()){
-                        tokens.add(participant.getAssociatedUser().getTokenId());
-                    }
-                }
-
-                for(Participant participant : bet.getUsersWhoReceive()){
-                    if(participant.isRealUser()){
-                        tokens.add(participant.getAssociatedUser().getTokenId());
-                    }
-                }
-
-                tokens.add(bet.getCreatedBy().getTokenId());
-
-                for(String token : tokens) {
-                    notifyUsers(token, "Nueva apuesta creada", bet.getCreatedBy().getFullName() + " ha creado una apuesta y te ha añadido.");
-                }
-                finish();
-            } catch (ParseException e) {
-                Log.e(TAG, "Error while saving the bet: ", e);
-                Toast.makeText(this, "Error while saving the bet. Please, try again later.", Toast.LENGTH_SHORT).show();
-                changeFormVisibility(true);
-            }
-        } else {
-            Toast.makeText(this, "Rellena los campos necesarios!", Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void changeFormVisibility(boolean showLoginForm){
