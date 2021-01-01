@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "714010827515",
+    "project_id": "apostometro",
+    "storage_bucket": "apostometro.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:714010827515:android:dfc2e9a6b7ef6d79b56e5e",
+        "android_client_info": {
+          "package_name": "com.kloso.apostometro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "714010827515-r14ug5ctnnah486s4t5t4ef2pbeipvcn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kloso.apostometro",
+            "certificate_hash": "9b61afb5d51b8df468abce6a710f0305c3c040cd"
+          }
+        },
+        {
+          "client_id": "714010827515-bu7jrldoi1emdf9vlg8ved2a3s9mi3me.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5lirkZ_MjjEMvU_62jZsCoNXgMAVgsjU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "714010827515-bu7jrldoi1emdf9vlg8ved2a3s9mi3me.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

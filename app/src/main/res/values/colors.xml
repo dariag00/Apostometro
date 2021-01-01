@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#616161</color>
+    <color name="colorPrimaryDark">#373737</color>
+    <color name="colorAccent">#8e8e8e</color>
+    <color name="grayBackground">#eeeeee</color>
+    <color name="defeatColor">#f44d41</color>
+    <color name="victoryColor">#498d00</color>
+    <color name="account_color">#FFFFFF</color>
+</resources>

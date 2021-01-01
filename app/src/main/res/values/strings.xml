@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">Apostometro</string>
+    <string name="email" translatable="false">Email</string>
+    <string name="password">Password</string>
+    <string name="log_in">Log In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="name">Name</string>
+    <string name="surname">Surname</string>
+    <string name="repeat_password">Repeat Password</string>
+    <string name="selected" translatable="false">Selected: %1$s</string>
+    <string name="participants">Participants:</string>
+    <string name="participant_name">Participant Name</string>
+    <string name="add">Add</string>
+    <string name="create_group" translatable="false">Create Group</string>
+    <string name="description">Description</string>
+    <string name="title">Title</string>
+    <string name="add_a_participant">Add a Participant</string>
+    <string name="add_a_new_expense" translatable="false">Add a new expense</string>
+    <string name="date">Date</string>
+    <string name="done">Done</string>
+    <string name="add_participant">Add Participant</string>
+    <string name="log_out">Log Out</string>
+    <string name="logo_image" translatable="false">Logo Image</string>
+    <string name="against">Against: </string>
+    <string name="favour">In Favour: </string>
+    <string name="against_s">Against</string>
+    <string name="favour_s">In Favour</string>
+    <string name="what_is_the_bet">What is the bet?</string>
+    <string name="what_do_you_bet">What do you bet?</string>
+    <string name="due_date">Due date</string>
+    <string name="reward">Reward: </string>
+    <string name="bets_won">Bets won</string>
+    <string name="pending_bets">Pending bets</string>
+    <string name="bets_lost">Bets lost</string>
+    <string name="mark_as_resolved">Mark as resolved</string>
+    <string name="pending">Pending</string>
+    <string name="won_by_favour">Won by in favour</string>
+    <string name="won_by_against">Won by against</string>
+    <string name="who_won">Who won the bet?</string>
+    <string name="mark_resolved">Mark Bet as Resolved</string>
+    <string name="user_name_or_email">User Name or Email</string>
+    <string name="against_2">Against</string>
+    <string name="favour_2">Favour</string>
+    <string name="state">State:</string>
+    <string name="open_bets">Open Bets</string>
+    <string name="closed_bets">Closed Bets</string>
+    <string name="token_prefix" translatable="false"></string>
+    <string name="created_at">Created at:</string>
+    <string name="created_by">"Created By: "</string>
+    <string name="delete_bet">Delete Bet</string>
+    <string name="delete_bet_confirm_1">Are you sure you want to delete it?</string>
+    <string name="delete_bet_confirm_2">Are you sure you want to delete this Bet?</string>
+</resources>
