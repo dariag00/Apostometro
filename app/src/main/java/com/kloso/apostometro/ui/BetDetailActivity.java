@@ -1,4 +1,4 @@
-package com.kloso.apostometro;
+package com.kloso.apostometro.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -10,32 +10,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.firebase.messaging.FirebaseMessaging;
+import com.kloso.apostometro.BetRepository;
+import com.kloso.apostometro.Constants;
+import com.kloso.apostometro.FirestoreViewModel;
+import com.kloso.apostometro.NotificationUtils;
+import com.kloso.apostometro.R;
+import com.kloso.apostometro.UsersAdapter;
 import com.kloso.apostometro.model.Bet;
-import com.kloso.apostometro.model.Participant;
 import com.kloso.apostometro.model.User;
-import com.kloso.apostometro.ui.CreateBetActivity;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,8 +57,7 @@ public class BetDetailActivity extends AppCompatActivity {
     private Bet bet;
     private UsersAdapter favourAdapter;
     private UsersAdapter againstAdapter;
-    private String FCM_API = "https://fcm.googleapis.com/fcm/send";
-    private RequestQueue requestQueue;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +76,6 @@ public class BetDetailActivity extends AppCompatActivity {
 
         markAsResolvedButton.setOnClickListener(view -> showConfirmationDialogMarkResolved());
 
-        requestQueue = Volley.newRequestQueue(this);
     }
 
     private void setUpBet(){
@@ -105,6 +95,9 @@ public class BetDetailActivity extends AppCompatActivity {
             if(bet != null) {
                 setBetData();
             }
+        });
+        firestoreViewModel.getUserByEmail(new BetRepository().getFirebaseUser().getEmail()).observe(this, user -> {
+            this.user = user;
         });
     }
 
@@ -139,24 +132,12 @@ public class BetDetailActivity extends AppCompatActivity {
         viewModel.updateBet(bet);
         setBetData();
 
-        Set<String> tokens = new HashSet<>();
+        Set<String> tokens = bet.getParticipantTokens();
+        tokens = tokens.stream().filter(token -> !token.equals(user.getTokenId())).collect(Collectors.toSet());
 
-        for(Participant participant : bet.getUsersWhoBets()){
-            if(participant.isRealUser()){
-                tokens.add(participant.getAssociatedUser().getTokenId());
-            }
-        }
-
-        for(Participant participant : bet.getUsersWhoReceive()){
-            if(participant.isRealUser()){
-                tokens.add(participant.getAssociatedUser().getTokenId());
-            }
-        }
-
-        tokens.add(bet.getCreatedBy().getTokenId());
-
+        NotificationUtils notificationUtils = new NotificationUtils(this, Volley.newRequestQueue(this));
         for(String token : tokens) {
-            notifyUsers(token, "Apuesta Resuelta", "Se ha resuelto la apuesta \"" + bet.getTitle()+ "\". A pagar!");
+            notificationUtils.notifyUsers(token, "Apuesta Resuelta", "Se ha resuelto la apuesta \"" + bet.getTitle()+ "\". A pagar!");
         }
 
     }
@@ -200,45 +181,6 @@ public class BetDetailActivity extends AppCompatActivity {
         finish();
     }
 
-    private void notifyUsers(String token, String title, String message){
-
-        String topic = "/topics/bet_notifications";
-        FirebaseMessaging.getInstance().subscribeToTopic(topic);
-
-        JSONObject notification = new JSONObject();
-        JSONObject notificationBody = new JSONObject();
-
-        try {
-            notificationBody.put("title", title);
-            notificationBody.put("message", message);
-            notification.put("to", token);
-            notification.put("data", notificationBody);
-        } catch (JSONException e) {
-            Log.e("TAG", "onCreate: " + e.getMessage());
-        }
-
-        sendNotification(notification);
-
-    }
-
-    private void sendNotification(JSONObject notification){
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(FCM_API, notification, response -> {
-            Log.i("TAG", "onResponse: " + response);
-        }, error -> {
-            Toast.makeText(this, "ERROR", Toast.LENGTH_SHORT).show();
-            Log.i("TAG", "onErrorResponse: Didn't work", error);
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> params = new HashMap<>();
-                params.put("Authorization",  "key=" + Constants.KEY);
-                params.put("Content-Type", "application/json");
-                return params;
-            }
-        };
-        requestQueue.add(jsonObjectRequest);
-    }
-
     private void setUpRecyclerView(RecyclerView recyclerView, UsersAdapter usersAdapter){
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -259,8 +201,8 @@ public class BetDetailActivity extends AppCompatActivity {
         if(bet.getCreationDate() != null) {
             createdAtView.setText(new SimpleDateFormat("dd/MM/yyyy").format(bet.getCreationDate()));
         }
-        favourAdapter.setParticipantList(bet.getUsersWhoBets());
-        againstAdapter.setParticipantList(bet.getUsersWhoReceive());
+        favourAdapter.setParticipantList(bet.getUsersInFavour());
+        againstAdapter.setParticipantList(bet.getUsersAgainst());
     }
 
 }

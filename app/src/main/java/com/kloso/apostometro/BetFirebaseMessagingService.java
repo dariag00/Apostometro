@@ -18,6 +18,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.kloso.apostometro.ui.BetDetailActivity;
 import com.kloso.apostometro.ui.MainActivity;
 
 import java.util.Random;

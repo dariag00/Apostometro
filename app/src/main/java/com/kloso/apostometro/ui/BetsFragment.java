@@ -1,6 +1,5 @@
-package com.kloso.apostometro;
+package com.kloso.apostometro.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,15 +16,22 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.kloso.apostometro.BetRepository;
+import com.kloso.apostometro.BetsAdapter;
+import com.kloso.apostometro.Constants;
+import com.kloso.apostometro.FirestoreViewModel;
+import com.kloso.apostometro.R;
+import com.kloso.apostometro.SwipeToDeleteCallback;
 import com.kloso.apostometro.model.Bet;
 import com.kloso.apostometro.model.User;
+import com.kloso.apostometro.ui.BetDetailActivity;
 
 import java.util.stream.Collectors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class BetsFragment extends Fragment implements BetsAdapter.BetClickListener{
+public class BetsFragment extends Fragment implements BetsAdapter.BetClickListener {
 
 
     @BindView(R.id.rv_bets)

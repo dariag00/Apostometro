@@ -2,13 +2,8 @@ package com.kloso.apostometro.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
@@ -20,15 +15,11 @@ import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.kloso.apostometro.BetDetailActivity;
 import com.kloso.apostometro.BetRepository;
-import com.kloso.apostometro.BetsAdapter;
-import com.kloso.apostometro.BetsFragment;
 import com.kloso.apostometro.Constants;
 import com.kloso.apostometro.FirestoreViewModel;
 import com.kloso.apostometro.FragmentStatePagerAdapter;
 import com.kloso.apostometro.R;
-import com.kloso.apostometro.SwipeToDeleteCallback;
 import com.kloso.apostometro.model.Bet;
 import com.kloso.apostometro.model.User;
 

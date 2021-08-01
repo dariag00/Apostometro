@@ -1,15 +1,20 @@
 package com.kloso.apostometro.model;
 
+import com.google.firebase.firestore.Exclude;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Bet implements Serializable {
 
     private String id;
-    private List<Participant> usersWhoBets;
-    private List<Participant> usersWhoReceive;
+    private List<Participant> usersInFavour;
+    private List<Participant> usersAgainst;
     private String title;
     private String reward;
     private boolean won;
@@ -32,32 +37,32 @@ public class Bet implements Serializable {
         this.id = id;
     }
 
-    public List<Participant> getUsersWhoBets() {
-        return usersWhoBets;
+    public List<Participant> getUsersInFavour() {
+        return usersInFavour;
     }
 
-    public void setUsersWhoBets(List<Participant> usersWhoBets) {
+    public void setUsersInFavour(List<Participant> usersInFavour) {
 
-        for(Participant participant: usersWhoBets){
+        for(Participant participant: usersInFavour){
             if(participant.isRealUser()){
                 participantEmails.add(participant.getAssociatedUser().getEmail());
             }
         }
 
-        this.usersWhoBets = usersWhoBets;
+        this.usersInFavour = usersInFavour;
     }
 
-    public List<Participant> getUsersWhoReceive() {
-        return usersWhoReceive;
+    public List<Participant> getUsersAgainst() {
+        return usersAgainst;
     }
 
-    public void setUsersWhoReceive(List<Participant> usersWhoReceive) {
-        for(Participant participant: usersWhoReceive){
+    public void setUsersAgainst(List<Participant> usersAgainst) {
+        for(Participant participant: usersAgainst){
             if(participant.isRealUser()){
                 participantEmails.add(participant.getAssociatedUser().getEmail());
             }
         }
-        this.usersWhoReceive = usersWhoReceive;
+        this.usersAgainst = usersAgainst;
     }
 
     public String getTitle() {
@@ -84,7 +89,7 @@ public class Bet implements Serializable {
 
         boolean userInFavour = false;
 
-        for(Participant participant : this.usersWhoBets){
+        for(Participant participant : this.usersInFavour){
             if(participant.getName().equals(user)){
                 userInFavour = true;
             }
@@ -137,9 +142,9 @@ public class Bet implements Serializable {
         this.createdBy = createdBy;
     }
 
-    public String getUsersInFavour(){
+    public String getUsersInFavourString(){
         StringBuilder builder = new StringBuilder();
-        for(Participant user : usersWhoBets){
+        for(Participant user : usersInFavour){
             builder.append(user.getName());
             builder.append(", ");
         }
@@ -147,13 +152,35 @@ public class Bet implements Serializable {
         return  builder.toString().substring(0, builder.toString().length() -2);
     }
 
-    public String getUsersAgainst(){
+    public String getUsersAgainstString(){
         StringBuilder builder = new StringBuilder();
-        for(Participant user : usersWhoReceive){
+        for(Participant user : usersAgainst){
             builder.append(user.getName());
             builder.append(", ");
         }
 
         return  builder.toString().substring(0, builder.toString().length() -2);
+    }
+
+    @Exclude
+    public Set<String> getParticipantTokens(){
+        Set<String> tokens = new HashSet<>();
+
+        for(Participant participant : this.usersInFavour){
+            if(participant.isRealUser()){
+                tokens.add(participant.getAssociatedUser().getTokenId());
+            }
+        }
+
+        for(Participant participant : this.usersAgainst){
+            if(participant.isRealUser()){
+                tokens.add(participant.getAssociatedUser().getTokenId());
+            }
+        }
+
+        tokens.add(this.createdBy.getTokenId());
+
+
+        return tokens;
     }
 }

@@ -111,8 +111,8 @@ public class BetsAdapter extends RecyclerView.Adapter<BetsAdapter.BetViewHolder>
         public void bind(Bet bet, Context context) {
             thingBetView.setText(bet.getReward());
             betTitleView.setText(bet.getTitle());
-            participantsAgainstView.setText(itemView.getContext().getResources().getString(R.string.against) +  " " +bet.getUsersAgainst());
-            participantsFavourView.setText(itemView.getContext().getResources().getString(R.string.favour) + " " + bet.getUsersInFavour());
+            participantsAgainstView.setText(itemView.getContext().getResources().getString(R.string.against) +  " " +bet.getUsersAgainstString());
+            participantsFavourView.setText(itemView.getContext().getResources().getString(R.string.favour) + " " + bet.getUsersInFavourString());
             if(bet.isPending()){
                 resultIndicator.setVisibility(View.INVISIBLE);
             } else if(bet.haveUserWon(currentParticipant)){

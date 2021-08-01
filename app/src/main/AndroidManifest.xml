@@ -11,7 +11,7 @@
         android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".BetDetailActivity"
+        <activity android:name=".ui.BetDetailActivity"
             android:parentActivityName=".ui.MainActivity"></activity>
         <activity android:name=".ui.CreateBetActivity" />
         <activity android:name=".ui.LoginActivity">

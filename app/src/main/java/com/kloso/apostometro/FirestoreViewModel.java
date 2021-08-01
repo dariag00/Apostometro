@@ -6,12 +6,14 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.kloso.apostometro.model.Bet;
 import com.kloso.apostometro.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class FirestoreViewModel extends ViewModel {
 
@@ -59,13 +61,13 @@ public class FirestoreViewModel extends ViewModel {
                 Log.w(TAG, "Snapshot listener failed: ", error);
                 savedBets.setValue(null);
             } else {
-                Log.i(TAG, "Expense groups obtained correctly");
-                List<Bet> expenseGroups = new ArrayList<>();
+                Log.i(TAG, "Bets obtained correctly");
+                List<Bet> bets = new ArrayList<>();
                 for(QueryDocumentSnapshot document : value){
-                    expenseGroups.add(document.toObject(Bet.class));
+                    bets.add(document.toObject(Bet.class));
                 }
 
-                savedBets.setValue(expenseGroups);
+                savedBets.setValue(bets);
             }
         });
 

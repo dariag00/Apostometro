@@ -19,36 +19,27 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.kloso.apostometro.BetRepository;
 import com.kloso.apostometro.Constants;
 import com.kloso.apostometro.DatePickerFragment;
 import com.kloso.apostometro.FirestoreViewModel;
+import com.kloso.apostometro.NotificationUtils;
 import com.kloso.apostometro.R;
 import com.kloso.apostometro.UsersAdapter;
 import com.kloso.apostometro.model.Bet;
 import com.kloso.apostometro.model.Participant;
 import com.kloso.apostometro.model.User;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -176,8 +167,8 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
         if(editableBet.getCreationDate() != null) {
             endDateView.setText(new SimpleDateFormat("dd/MM/yyyy").format(editableBet.getCreationDate()));
         }
-        favourParticipants.addAll(editableBet.getUsersWhoBets());
-        againstParticipants.addAll(editableBet.getUsersWhoReceive());
+        favourParticipants.addAll(editableBet.getUsersInFavour());
+        againstParticipants.addAll(editableBet.getUsersAgainst());
         favourAdapter.setParticipantList(favourParticipants);
         againstAdapter.setParticipantList(againstParticipants);
     }
@@ -201,8 +192,8 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
                     }
                 }
 
-                bet.setUsersWhoBets(favourParticipants);
-                bet.setUsersWhoReceive(againstParticipants);
+                bet.setUsersInFavour(favourParticipants);
+                bet.setUsersAgainst(againstParticipants);
                 if(!isEdit) {
                     bet.setCreatedBy(user);
                 }
@@ -217,27 +208,16 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
 
                 changeFormVisibility(true);
 
-                Set<String> tokens = new HashSet<>();
+                Set<String> tokens = bet.getParticipantTokens();
+                tokens = tokens.stream().filter(token -> !token.equals(user.getTokenId())).collect(Collectors.toSet());
 
-                for(Participant participant : bet.getUsersWhoBets()){
-                    if(participant.isRealUser()){
-                        tokens.add(participant.getAssociatedUser().getTokenId());
-                    }
-                }
-
-                for(Participant participant : bet.getUsersWhoReceive()){
-                    if(participant.isRealUser()){
-                        tokens.add(participant.getAssociatedUser().getTokenId());
-                    }
-                }
-
-                tokens.add(bet.getCreatedBy().getTokenId());
+                NotificationUtils notificationUtils = new NotificationUtils(this, Volley.newRequestQueue(this));
 
                 for(String token : tokens) {
                     if(!isEdit) {
-                        notifyUsers(token, "Nueva apuesta creada", bet.getCreatedBy().getFullName() + " ha creado una apuesta y te ha añadido.", null);
+                        notificationUtils.notifyUsers(token, "Nueva apuesta creada", bet.getCreatedBy().getFullName() + " ha creado una apuesta y te ha añadido.", null);
                     } else {
-                        notifyUsers(token, "Apuesta Editada", user.getFullName() + " ha editado una apuesta en la que estás añadido", bet.getId());
+                        notificationUtils.notifyUsers(token, "Apuesta Editada", user.getFullName() + " ha editado una apuesta en la que estás añadido", bet.getId());
                     }
                 }
                 finish();
@@ -249,46 +229,6 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
         } else {
             Toast.makeText(this, "Rellena los campos necesarios", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void notifyUsers(String token, String title, String message, String betId){
-
-        JSONObject notification = new JSONObject();
-        JSONObject notificationBody = new JSONObject();
-
-        try {
-            notificationBody.put("title", title);
-            notificationBody.put("message", message);
-            if(betId != null){
-                notificationBody.put("type", "edit");
-                notificationBody.put("bet_id", betId);
-            }
-            notification.put("to", token);
-            notification.put("data", notificationBody);
-        } catch (JSONException e) {
-            Log.e(TAG, "onCreate: " + e.getMessage());
-        }
-
-        sendNotification(notification);
-
-    }
-
-    private void sendNotification(JSONObject notification){
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(FCM_API, notification, response -> {
-            Log.i(TAG, "onResponse: " + response);
-        }, error -> {
-            Toast.makeText(this, "ERROR", Toast.LENGTH_SHORT).show();
-            Log.i(TAG, "onErrorResponse: Didn't work", error);
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> params = new HashMap<>();
-                params.put("Authorization",  "key=" + Constants.KEY);
-                params.put("Content-Type", "application/json");
-                return params;
-            }
-        };
-        requestQueue.add(jsonObjectRequest);
     }
 
     private void setUpRecyclerView(RecyclerView recyclerView, UsersAdapter usersAdapter){
