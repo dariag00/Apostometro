@@ -61,7 +61,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewResult" />
 
     <TextView
         android:id="@+id/textView2"
@@ -85,12 +85,33 @@
         tools:text="Pending" />
 
     <TextView
+        android:id="@+id/textViewResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/result"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <TextView
+        android:id="@+id/tv_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp"
+        app:layout_constraintStart_toEndOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/tv_state"
+        tools:text="Unresolved" />
+
+    <TextView
         android:id="@+id/tv_created_at"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@+id/tv_state"
-        app:layout_constraintTop_toBottomOf="@+id/tv_state"
+        app:layout_constraintTop_toBottomOf="@+id/tv_result"
         tools:text="19/10/1997" />
 
     <TextView
@@ -184,8 +205,20 @@
         android:background="@color/colorPrimary"
         android:text="@string/mark_as_resolved"
         android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@id/button_mark_paid"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_mark_paid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:text="@string/mark_as_paid"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -106,4 +106,8 @@ public class FirestoreViewModel extends ViewModel {
         betRepository.updateBet(bet);
     }
 
+    public void updateItems(){
+        betRepository.updateItems();
+    }
+
 }

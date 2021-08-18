@@ -197,10 +197,10 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
                 if(!isEdit) {
                     bet.setCreatedBy(user);
                 }
-                bet.getParticipantEmails().add(user.getEmail());
 
                 FirestoreViewModel viewModel = new ViewModelProvider(this).get(FirestoreViewModel.class);
                 if(isEdit){
+                    bet.getParticipantEmails().add(user.getEmail());
                     viewModel.updateBet(bet);
                 } else {
                     viewModel.saveBet(bet);

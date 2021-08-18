@@ -38,8 +38,8 @@
     <string name="favour_2">A Favor</string>
     <string name="user_name_or_email">Nombre o Email</string>
     <string name="state">Estado:</string>
-    <string name="closed_bets">Apuestas Cerradas</string>
-    <string name="open_bets">Apuestas Abiertas</string>
+    <string name="closed_bets">Pagadas</string>
+    <string name="open_bets">Abiertas</string>
     <string name="created_at">Creada:</string>
     <string name="created_by">"Creada por:   "</string>
     <string name="delete_bet">Eliminar Apuesta</string>
@@ -51,4 +51,13 @@
     <string name="edit_bet">Editar Apuesta</string>
     <string name="empty_participant_error">No se puede crear un participant con nombre vacío.</string>
     <string name="saving_bet_error">Error al guardar la apuesta. Por favor, prueba de nuevo más tarde.</string>
+    <string name="paid">Pagada</string>
+    <string name="pending_payment_bets">Resueltas</string>
+    <string name="bet_paid">Apuesta Pagada</string>
+    <string name="bet_resolved">Apuesta Resuelta</string>
+    <string name="mark_as_paid">Marcar apuesta como Pagada</string>
+    <string name="mark_paid">Marcar apuesta como Pagada</string>
+    <string name="paid_confirmation">¿Estás seguro de que quieres marcar la apuesta como pagada?</string>
+    <string name="result">Resultado</string>
+    <string name="unresolved">Sin Resolver</string>
 </resources>

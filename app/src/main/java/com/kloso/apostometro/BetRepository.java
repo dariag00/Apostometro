@@ -1,5 +1,8 @@
 package com.kloso.apostometro;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -7,7 +10,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.kloso.apostometro.model.Bet;
+import com.kloso.apostometro.model.Result;
+import com.kloso.apostometro.model.State;
 import com.kloso.apostometro.model.User;
 
 public class BetRepository {
@@ -56,6 +62,31 @@ public class BetRepository {
 
     public DocumentReference getBet(String betId){
         return firebaseFirestore.collection("bets").document(betId);
+    }
+
+    public void updateItems(){
+        firebaseFirestore.collection("bets").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (DocumentSnapshot document : task.getResult()) {
+                        Bet bet = document.toObject(Bet.class);
+                        if(bet.getState() == State.WON_BY_FAVOUR) {
+                            bet.setState(State.RESOLVED);
+                            bet.setResult(Result.WON_BY_FAVOUR);
+                        } else if(bet.getState() == State.WON_BY_AGAINST) {
+                            bet.setState(State.RESOLVED);
+                            bet.setResult(Result.WON_BY_AGAINST);
+                        } else if(bet.getState() == State.PAID) {
+                            bet.setState(State.PAID);
+                            bet.setResult(Result.WON_BY_FAVOUR);
+                        }
+                            String id = document.getId();
+                        firebaseFirestore.collection("bets").document(id).set(bet); //Set student object
+                    }
+                }
+            }
+        });
     }
 
 }

@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.kloso.apostometro.model.Bet;
+import com.kloso.apostometro.model.State;
 
 import java.util.List;
 
@@ -113,7 +114,7 @@ public class BetsAdapter extends RecyclerView.Adapter<BetsAdapter.BetViewHolder>
             betTitleView.setText(bet.getTitle());
             participantsAgainstView.setText(itemView.getContext().getResources().getString(R.string.against) +  " " +bet.getUsersAgainstString());
             participantsFavourView.setText(itemView.getContext().getResources().getString(R.string.favour) + " " + bet.getUsersInFavourString());
-            if(bet.isPending()){
+            if(bet.getState().equals(State.OPEN)){
                 resultIndicator.setVisibility(View.INVISIBLE);
             } else if(bet.haveUserWon(currentParticipant)){
                 resultIndicator.setBackgroundColor(context.getResources().getColor(R.color.victoryColor));

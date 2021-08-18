@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class Bet implements Serializable {
@@ -17,16 +16,17 @@ public class Bet implements Serializable {
     private List<Participant> usersAgainst;
     private String title;
     private String reward;
-    private boolean won;
-    private boolean pending;
-    private List<String> participantEmails;
+    private List<String > participantEmails;
     private Date creationDate;
     private Date dueDate;
     private User createdBy;
+    private State state;
+    private Result result;
 
     public Bet(){
-        this.pending = true;
         participantEmails = new ArrayList<>();
+        state = State.OPEN;
+        result = Result.UNRESOLVED;
     }
 
     public String getId() {
@@ -81,26 +81,21 @@ public class Bet implements Serializable {
         this.reward = reward;
     }
 
-    public boolean isWon() {
-        return won;
-    }
 
     public boolean haveUserWon(String user){
 
         boolean userInFavour = false;
-
+        //TODO refactorizar basandose en el contains
         for(Participant participant : this.usersInFavour){
             if(participant.getName().equals(user)){
                 userInFavour = true;
             }
         }
 
-        return this.isWon() && userInFavour || !this.isWon() && !userInFavour;
+        return this.result == Result.WON_BY_FAVOUR && userInFavour
+                || this.result == Result.WON_BY_AGAINST && !userInFavour;
     }
 
-    public void setWon(boolean won) {
-        this.won = won;
-    }
 
     public List<String> getParticipantEmails() {
         return participantEmails;
@@ -108,14 +103,6 @@ public class Bet implements Serializable {
 
     public void setParticipantEmails(List<String> participantEmails) {
         this.participantEmails = participantEmails;
-    }
-
-    public boolean isPending() {
-        return pending;
-    }
-
-    public void setPending(boolean pending) {
-        this.pending = pending;
     }
 
     public Date getCreationDate() {
@@ -182,5 +169,21 @@ public class Bet implements Serializable {
 
 
         return tokens;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    public Result getResult() {
+        return result;
+    }
+
+    public void setResult(Result result) {
+        this.result = result;
     }
 }

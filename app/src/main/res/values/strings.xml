@@ -38,12 +38,14 @@
     <string name="won_by_against">Won by against</string>
     <string name="who_won">Who won the bet?</string>
     <string name="mark_resolved">Mark Bet as Resolved</string>
+    <string name="mark_paid">Mark Bet as Paid</string>
     <string name="user_name_or_email">User Name or Email</string>
     <string name="against_2">Against</string>
     <string name="favour_2">Favour</string>
     <string name="state">State:</string>
-    <string name="open_bets">Open Bets</string>
-    <string name="closed_bets">Closed Bets</string>
+    <string name="open_bets">Open</string>
+    <string name="pending_payment_bets">Pending Payment</string>
+    <string name="closed_bets">Closed</string>
     <string name="token_prefix" translatable="false"></string>
     <string name="created_at">Created at:</string>
     <string name="created_by">"Created By: "</string>
@@ -56,4 +58,11 @@
     <string name="create_bet">Create Bet</string>
     <string name="empty_participant_error">You have to specify a participant name or email</string>
     <string name="saving_bet_error">Error while saving the bet. Please, try again later.</string>
+    <string name="paid">Paid</string>
+    <string name="mark_as_paid">Mark Bet as Paid</string>
+    <string name="bet_resolved">Bet Resolved</string>
+    <string name="bet_paid">Bet Paid</string>
+    <string name="paid_confirmation">Are you sure that you want to mark the bet as paid?</string>
+    <string name="unresolved">Unresolved</string>
+    <string name="result">Result</string>
 </resources>

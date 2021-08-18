@@ -21,9 +21,11 @@ import com.kloso.apostometro.FirestoreViewModel;
 import com.kloso.apostometro.FragmentStatePagerAdapter;
 import com.kloso.apostometro.R;
 import com.kloso.apostometro.model.Bet;
+import com.kloso.apostometro.model.State;
 import com.kloso.apostometro.model.User;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -60,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         user = (User) previousIntent.getSerializableExtra(Constants.USER);
 
         FirestoreViewModel firestoreViewModel = new ViewModelProvider(this).get(FirestoreViewModel.class);
-
         if(user == null){
             firestoreViewModel.getUserByEmail(new BetRepository().getFirebaseUser().getEmail()).observe(this, user -> {
                 this.user = user;
@@ -87,8 +88,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void setUpViewPager(){
         List<Fragment> fragmentList = new ArrayList<>();
-        fragmentList.add(new BetsFragment(user, true, this));
-        fragmentList.add(new BetsFragment(user, false, this));
+        fragmentList.add(new BetsFragment(user, this, Arrays.asList(State.OPEN)));
+        fragmentList.add(new BetsFragment(user,  this, Arrays.asList(State.RESOLVED)));
+        fragmentList.add(new BetsFragment(user, this, Arrays.asList(State.PAID)));
         FragmentStatePagerAdapter pagerAdapter = new FragmentStatePagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, fragmentList);
         viewPager.setAdapter(pagerAdapter);
     }
@@ -97,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         int wonBets = 0, lostBets = 0, pendingBets = 0;
 
         for(Bet bet : bets){
-            if(bet.isPending()){
+            if(bet.getState().equals(State.OPEN)){
                 pendingBets += 1;
             } else if(bet.haveUserWon(user.getFullName())){
                 wonBets += 1;
