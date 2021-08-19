@@ -16,7 +16,7 @@
     <string name="title">Title</string>
     <string name="add_a_participant">Add a Participant</string>
     <string name="add_a_new_expense" translatable="false">Add a new expense</string>
-    <string name="date">Date</string>
+    <string name="date">Creation Date</string>
     <string name="done">Done</string>
     <string name="add_participant">Add Participant</string>
     <string name="log_out">Log Out</string>
@@ -65,4 +65,5 @@
     <string name="paid_confirmation">Are you sure that you want to mark the bet as paid?</string>
     <string name="unresolved">Unresolved</string>
     <string name="result">Result</string>
+    <string name="limit_date">Limit Date:</string>
 </resources>

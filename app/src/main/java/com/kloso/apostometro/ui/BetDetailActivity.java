@@ -29,6 +29,7 @@ import com.kloso.apostometro.model.Result;
 import com.kloso.apostometro.model.User;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 

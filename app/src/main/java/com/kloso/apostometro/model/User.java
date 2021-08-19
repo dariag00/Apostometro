@@ -64,4 +64,8 @@ public class User implements Serializable {
     public void setTokenId(String tokenId) {
         this.tokenId = tokenId;
     }
+    @Override
+    public String toString() {
+        return username;
+    }
 }

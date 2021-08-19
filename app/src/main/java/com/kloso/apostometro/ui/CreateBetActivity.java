@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -35,6 +37,7 @@ import com.kloso.apostometro.model.User;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -65,7 +68,7 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
     @BindView(R.id.button_add_participant)
     Button addParticipantButton;
     @BindView(R.id.et_participant_name)
-    EditText participantDataView;
+    AutoCompleteTextView participantDataView;
     @BindView(R.id.pb_create_bet)
     ProgressBar progressBar;
     @BindView(R.id.form_login)
@@ -78,7 +81,6 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
     private List<User> currentUsers;
     private FirestoreViewModel firestoreViewModel;
     private User user;
-    private String FCM_API = "https://fcm.googleapis.com/fcm/send";
 
     private RequestQueue requestQueue;
     private boolean isEdit;
@@ -114,6 +116,10 @@ public class CreateBetActivity extends AppCompatActivity implements UsersAdapter
             currentUsers = users;
             favourAdapter.setUsers(users);
             againstAdapter.setUsers(users);
+            List<String> userEmails = currentUsers.stream().map(User::getEmail).collect(Collectors.toList());
+            ArrayAdapter<String> adapter =
+                    new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, userEmails);
+            participantDataView.setAdapter(adapter);
         });
 
         firestoreViewModel.getUserByEmail(new BetRepository().getFirebaseUser().getEmail()).observe(this, user -> {

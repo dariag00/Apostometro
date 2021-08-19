@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "714010827515-b4bl9seibtc9ql3vapjr150trv3rdhuj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kloso.apostometro",
+            "certificate_hash": "c6f49a230931f3e03a85700a05da8423517d4329"
+          }
+        },
+        {
+          "client_id": "714010827515-j4129eds2fbuubn0rtn6900lui4hvimq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kloso.apostometro",
+            "certificate_hash": "fc81e397feedf439fe65641cdb48125573ba1604"
+          }
+        },
+        {
           "client_id": "714010827515-r14ug5ctnnah486s4t5t4ef2pbeipvcn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

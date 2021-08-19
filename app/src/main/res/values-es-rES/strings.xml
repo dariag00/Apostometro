@@ -5,7 +5,7 @@
     <string name="add_a_participant">Añadir un Apostador</string>
     <string name="add_participant">Añadir Apostador</string>
     <string name="against">En Contra:</string>
-    <string name="date">Fecha</string>
+    <string name="date">Fecha de Creación</string>
     <string name="description">Descripción</string>
     <string name="done">Hecho</string>
     <string name="favour">A Favor:</string>
@@ -60,4 +60,5 @@
     <string name="paid_confirmation">¿Estás seguro de que quieres marcar la apuesta como pagada?</string>
     <string name="result">Resultado</string>
     <string name="unresolved">Sin Resolver</string>
+    <string name="limit_date">Fecha Limite:</string>
 </resources>
